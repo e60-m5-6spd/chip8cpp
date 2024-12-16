@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 			lastCycleTime = currentTime;
 
 			chip8.Cycle();
-
+            int videoPitch = sizeof(chip8.video[0]) * Chip8::VIDEO_WIDTH;
 			platform.Update(chip8.video, videoPitch);
 		}
 	}

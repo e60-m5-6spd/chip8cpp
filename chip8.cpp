@@ -137,24 +137,27 @@ void Chip8::Cycle()
 	}
 }
 
-void Chip8::LoadROM(char const* filename){
-    
-    // open the file as a stream of binary and move the file pointer to the end
-    // opened in binary mode starting at the end
+void Chip8::LoadROM(char const* filename)
+{
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
 
-    if(file.is_open()){
-
-        // get the size of the file since its already opened at the end
+    if (file.is_open())
+    {
         std::streampos size = file.tellg();
         std::vector<char> buffer(size);
+        file.seekg(0, std::ios::beg);
         file.read(buffer.data(), size);
 
-        // Load the ROM contents into the chip8's memory, starting at 0x200
-        for(long i = 0; i < size; ++i){
-            memory[START_ADDRESS+i] = buffer[i];
+        for (long i = 0; i < size; ++i)
+        {
+            memory[START_ADDRESS + i] = buffer[i];
         }
 
+        std::cout << "ROM loaded, size: " << size << " bytes\n";
+    }
+    else
+    {
+        std::cerr << "Failed to open ROM: " << filename << "\n";
     }
 }
 
@@ -351,9 +354,11 @@ void Chip8::OP_Dxyn()
 {
     // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 
+    // 
 	uint8_t Vx = (opcode & 0x0F00u) >> 8u;
 	uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 	uint8_t height = opcode & 0x000Fu;
+    
 
 	// Wrap if going beyond screen boundaries
 	uint8_t xPos = registers[Vx] % VIDEO_WIDTH;
